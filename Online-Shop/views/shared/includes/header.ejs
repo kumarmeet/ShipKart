@@ -1,15 +1,18 @@
-<header>
-  <div>
+
+<header id="main-header">
+  <div id="logo">
     <a href="/">ShipKart</a>
   </div>
 
-  <nav>
-    <ul>
-      <% if(locals.isAuth){ %>
-      <li>
-        <button>Logout</button>
-      </li>
-      <% } %>
-    </ul>
-  </nav>
+  <nav><%- include("nav-items.ejs") %></nav>
+
+  <button id="mobile-menu-btn">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
 </header>
+
+<aside id="mobile-menu">
+  <nav><%- include("nav-items.ejs") %></nav>
+</aside>

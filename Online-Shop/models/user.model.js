@@ -23,6 +23,14 @@ class User {
     return bcrypt.compare(this.password, hashedPassword);
   }
 
+  async existAlready() {
+    const existingUser = await this.getUserWithSameEmail();
+    if (existingUser) {
+      return true;
+    }
+    return false;
+  }
+
   async signUp() {
     const hashedPassword = await bcrypt.hash(this.password, 12);
 
