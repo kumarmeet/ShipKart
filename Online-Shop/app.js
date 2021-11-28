@@ -5,9 +5,11 @@ const expressSession = require("express-session");
 
 const createSessionConfig = require("./config/session");
 const db = require("./data/database");
+
 const addCsrfTokenMiddleware = require("./middleware/csrf-token");
 const errorHandlerMiddleware = require("./middleware/error-handler");
 const checkAuthStatusMiddleware = require("./middleware/check-auth");
+
 const authRoutes = require("./routes/auth.routes");
 const baseRoutes = require("./routes/base.routes");
 const productsRoutes = require("./routes/products.routes");
@@ -19,6 +21,7 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
 app.use(express.static("public"));
+app.use("/products/assets",express.static("product-data"))
 app.use(express.urlencoded({ extended: false }));
 
 const sessionConfig = createSessionConfig();
