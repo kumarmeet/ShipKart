@@ -2,24 +2,22 @@ const mongodb = require("mongodb");
 
 const MongoClient = mongodb.MongoClient;
 
-let database = null;
+let database;
 
-const mongoDBDefaultUrl = "mongodb://localhost:27017";
-
-const connectToDatabase = async () => {
-  const client = await MongoClient.connect(mongoDBDefaultUrl);
+async function connectToDatabase() {
+  const client = await MongoClient.connect("mongodb://localhost:27017");
   database = client.db("shipkart");
-};
+}
 
-const getDB = () => {
+function getDb() {
   if (!database) {
-    throw new Error("Database may not connected!");
+    throw new Error("You must connect first!");
   }
 
   return database;
-};
+}
 
 module.exports = {
   connectToDatabase: connectToDatabase,
-  getDB: getDB,
+  getDb: getDb,
 };

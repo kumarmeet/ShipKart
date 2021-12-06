@@ -1,20 +1,20 @@
-const Product = require("../models/product.mode");
+const Product = require('../models/product.model');
 
-const getProducts = async (req, res, next) => {
+async function getProducts(req, res, next) {
   try {
     const products = await Product.findAll();
-    res.render("admin/products/all-products", { products: products });
+    res.render('admin/products/all-products', { products: products });
   } catch (error) {
     next(error);
     return;
   }
-};
+}
 
-const getNewProduct = (req, res) => {
-  res.render("admin/products/new-product");
-};
+function getNewProduct(req, res) {
+  res.render('admin/products/new-product');
+}
 
-const createNewProduct = async (req, res, next) => {
+async function createNewProduct(req, res, next) {
   const product = new Product({
     ...req.body,
     image: req.file.filename,
@@ -27,19 +27,49 @@ const createNewProduct = async (req, res, next) => {
     return;
   }
 
-  res.redirect("/admin/products");
-};
+  res.redirect('/admin/products');
+}
 
-const getUpdateProduct = async (req, res, next) => {
+async function getUpdateProduct(req, res, next) {
   try {
     const product = await Product.findById(req.params.id);
-    res.render("admin/products/update-product", { product: product });
+    res.render('admin/products/update-product', { product: product });
   } catch (error) {
     next(error);
   }
-};
+}
 
-const updateProduct = (req, res) => {};
+async function updateProduct(req, res, next) {
+  const product = new Product({
+    ...req.body,
+    _id: req.params.id,
+  });
+
+  if (req.file) {
+    product.replaceImage(req.file.filename);
+  }
+
+  try {
+    await product.save();
+  } catch (error) {
+    next(error);
+    return;
+  }
+
+  res.redirect('/admin/products');
+}
+
+async function deleteProduct(req, res, next) {
+  let product;
+  try {
+    product = await Product.findById(req.params.id);
+    await product.remove();
+  } catch (error) {
+    return next(error);
+  }
+
+  res.json({ message: 'Deleted product!' });
+}
 
 module.exports = {
   getProducts: getProducts,
@@ -47,4 +77,5 @@ module.exports = {
   createNewProduct: createNewProduct,
   getUpdateProduct: getUpdateProduct,
   updateProduct: updateProduct,
+  deleteProduct: deleteProduct,
 };
