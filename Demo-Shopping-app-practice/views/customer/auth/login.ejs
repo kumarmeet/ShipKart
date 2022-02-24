@@ -1,0 +1,52 @@
+<%- include("../../shared/includes/head", {title: "Login"}) %> 
+<link rel="stylesheet" href="/styles/forms.css">
+<link rel="stylesheet" href="/styles/auth.css">
+</head>
+<body>
+    <%- include("../../shared/includes/header") %>
+
+    <main>
+        <h1>Log-in</h1>
+
+        <% if(sessionData.errorMessage) {%>
+            
+            <section class="alert">
+                <h2>Invalid input</h2>
+                <p><%= sessionData.errorMessage %></p>
+            </section>
+
+        <% } %>
+
+        <form action="/login" method="POST">
+
+            <input type="hidden" name="_csrf" value="<%=locals.csrfToken%>">
+
+            <p>
+                <label for="email">E-Mail</label>
+                <input 
+                type="email" 
+                name="email" 
+                id="email"
+                value="<%=sessionData.email%>" 
+                required>
+            </p>
+
+            <p>
+                <label for="password">Password</label>
+                <input 
+                type="password" 
+                name="password" 
+                id="password" 
+                minlength="6" 
+                value="<%=sessionData.password%>"
+                required>
+            </p>
+            
+            <button class="btn" type="submit">Login</button>
+            
+            <p id="switch-form"><a href="/signup">Signup Instead</a></p>
+        </form>
+    </main>
+
+    <%- include("../../shared/includes/footer") %>
+        
