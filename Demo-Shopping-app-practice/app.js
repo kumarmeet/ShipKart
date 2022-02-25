@@ -15,6 +15,7 @@ const adminRoutes = require("./routes/admin.routes");
 const csrfTokenMiddleware = require("./middlewares/csrf-token");
 const handleServerSideErrorMiddleware = require("./middlewares/error-handler");
 const checkAuthStatusMiddleware = require("./middlewares/check-auth");
+const protectRoutesMiddleware = require("./middlewares/protect-routes");
 
 const app = express();
 
@@ -37,6 +38,9 @@ app.use(checkAuthStatusMiddleware);
 app.use(baseRoutes);
 app.use(authRoutes);
 app.use(productRoutes);
+
+//this middleware will protects the authentication and authorization
+app.use(protectRoutesMiddleware);
 
 app.use("/admin", adminRoutes);
 
