@@ -11,11 +11,13 @@ const authRoutes = require("./routes/auth.routes");
 const productRoutes = require("./routes/products.routes");
 const baseRoutes = require("./routes/base.routes");
 const adminRoutes = require("./routes/admin.routes");
+const cartRoutes = require("./routes/cart.routes");
 
 const csrfTokenMiddleware = require("./middlewares/csrf-token");
 const handleServerSideErrorMiddleware = require("./middlewares/error-handler");
 const checkAuthStatusMiddleware = require("./middlewares/check-auth");
 const protectRoutesMiddleware = require("./middlewares/protect-routes");
+const cartMiddleware = require("./middlewares/cart");
 
 const app = express();
 
@@ -32,12 +34,16 @@ const sessionConfig = createSessionConfig();
 app.use(expressSession(sessionConfig));
 
 app.use(csrf());
+
+app.use(cartMiddleware);
+
 app.use(csrfTokenMiddleware);
 app.use(checkAuthStatusMiddleware);
 
 app.use(baseRoutes);
 app.use(authRoutes);
 app.use(productRoutes);
+app.use("/cart", cartRoutes);
 
 //this middleware will protects the authentication and authorization
 app.use(protectRoutesMiddleware);
