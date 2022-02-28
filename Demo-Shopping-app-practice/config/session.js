@@ -2,11 +2,11 @@ const expressSession = require("express-session");
 const mongoDbStore = require("connect-mongodb-session");
 
 function createSessionStore() {
-  const MongoDbStore = mongoDbStore(expressSession);
+  const MongoDBStore = mongoDbStore(expressSession);
 
-  const store = new MongoDbStore({
+  const store = new MongoDBStore({
     uri: "mongodb://127.0.0.1:27017",
-    databaseName: "online-shopping",
+    databaseName: "online-shop",
     collection: "sessions",
   });
 
@@ -15,7 +15,7 @@ function createSessionStore() {
 
 function createSessionConfig() {
   return {
-    secret: "528633",
+    secret: "super-secret",
     resave: false,
     saveUninitialized: false,
     store: createSessionStore(),

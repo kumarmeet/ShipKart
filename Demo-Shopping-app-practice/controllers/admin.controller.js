@@ -1,19 +1,20 @@
-const Product = require("../models/Product.model");
+const Product = require('../models/product.model');
 
-const getProducts = async (req, res, next) => {
+async function getProducts(req, res, next) {
   try {
     const products = await Product.findAll();
-    res.render("admin/products/all-products", { products: products });
+    res.render('admin/products/all-products', { products: products });
   } catch (error) {
-    return next(error);
+    next(error);
+    return;
   }
-};
+}
 
-const getNewProduct = (req, res) => {
-  res.render("admin/products/new-product");
-};
+function getNewProduct(req, res) {
+  res.render('admin/products/new-product');
+}
 
-const createNewProduct = async (req, res, next) => {
+async function createNewProduct(req, res, next) {
   const product = new Product({
     ...req.body,
     image: req.file.filename,
@@ -22,44 +23,44 @@ const createNewProduct = async (req, res, next) => {
   try {
     await product.save();
   } catch (error) {
-    return next(error);
+    next(error);
+    return;
   }
 
-  res.redirect("/admin/products");
-};
+  res.redirect('/admin/products');
+}
 
-const getUpdateProduct = async (req, res, next) => {
+async function getUpdateProduct(req, res, next) {
   try {
     const product = await Product.findById(req.params.id);
-    res.render("admin/products/update-product", { product: product });
+    res.render('admin/products/update-product', { product: product });
   } catch (error) {
-    return next(error);
+    next(error);
   }
-};
+}
 
-const updateProduct = async (req, res, next) => {
+async function updateProduct(req, res, next) {
   const product = new Product({
     ...req.body,
     _id: req.params.id,
   });
 
-  //if dont add a file then multer by default undefined otherwise truthy value
   if (req.file) {
-    //replace old image with new one
     product.replaceImage(req.file.filename);
   }
 
   try {
     await product.save();
-    res.redirect("/admin/products");
   } catch (error) {
-    return next(error);
+    next(error);
+    return;
   }
-};
 
-const deleteProduct = async (req, res, next) => {
-  let product = null;
+  res.redirect('/admin/products');
+}
 
+async function deleteProduct(req, res, next) {
+  let product;
   try {
     product = await Product.findById(req.params.id);
     await product.remove();
@@ -67,8 +68,8 @@ const deleteProduct = async (req, res, next) => {
     return next(error);
   }
 
-  res.json({ message: "Successfully deleted." });
-};
+  res.json({ message: 'Deleted product!' });
+}
 
 module.exports = {
   getProducts: getProducts,

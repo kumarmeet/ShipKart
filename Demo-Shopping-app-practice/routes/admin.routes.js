@@ -1,31 +1,20 @@
-const express = require("express");
+const express = require('express');
+
+const adminController = require('../controllers/admin.controller');
+const imageUploadMiddleware = require('../middlewares/image-upload');
 
 const router = express.Router();
 
-const adminController = require("../controllers/admin.controller");
+router.get('/products', adminController.getProducts); // /admin/products
 
-const imageUploadMiddleware = require("../middlewares/image-upload");
+router.get('/products/new', adminController.getNewProduct);
 
-//ommited (/admin) due to using app.use("/admin", adminRoutes) in app.js
+router.post('/products', imageUploadMiddleware, adminController.createNewProduct);
 
-router.get("/products", adminController.getProducts);
+router.get('/products/:id', adminController.getUpdateProduct);
 
-router.get("/products/new", adminController.getNewProduct);
+router.post('/products/:id', imageUploadMiddleware, adminController.updateProduct);
 
-router.post(
-  "/products",
-  imageUploadMiddleware,
-  adminController.createNewProduct
-);
-
-router.get("/products/:id", adminController.getUpdateProduct);
-
-router.post(
-  "/products/:id",
-  imageUploadMiddleware,
-  adminController.updateProduct
-);
-
-router.delete("/products/:id", adminController.deleteProduct);
+router.delete('/products/:id', adminController.deleteProduct);
 
 module.exports = router;

@@ -1,24 +1,24 @@
-const Product = require("../models/Product.model");
+const Product = require('../models/product.model');
 
-const getAllProducts = async (req, res, next) => {
+async function getAllProducts(req, res, next) {
   try {
     const products = await Product.findAll();
-    res.render("customer/products/all-products", { products: products });
+    res.render('customer/products/all-products', { products: products });
   } catch (error) {
-    return next(error);
+    next(error);
   }
-};
+}
 
-const getProduct = async (req, res, next) => {
+async function getProductDetails(req, res, next) {
   try {
     const product = await Product.findById(req.params.id);
-    res.render("customer/products/products-details", { product: product });
+    res.render('customer/products/product-details', { product: product });
   } catch (error) {
-    return next(error);
+    next(error);
   }
-};
+}
 
 module.exports = {
   getAllProducts: getAllProducts,
-  getProduct: getProduct,
+  getProductDetails: getProductDetails
 };

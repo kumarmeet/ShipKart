@@ -1,39 +1,35 @@
-const User = require("../models/User.Model");
+const User = require('../models/user.model');
+const authUtil = require('../util/authentication');
+const validation = require('../util/validation');
+const sessionFlash = require('../util/session-flash');
 
-const authUtil = require("../util/authentication");
+function getSignup(req, res) {
+  let sessionData = sessionFlash.getSessionData(req);
 
-const validation = require("../util/validation");
-
-const sessionFlash = require("../util/session-flash");
-
-const getSignup = (req, res) => {
-  let sessionData = sessionFlash.getFlashData(req);
-
-  //if user comes first time the signup page and all fields are empty then this if block will work
   if (!sessionData) {
     sessionData = {
-      email: "",
-      confirmEmail: "",
-      password: "",
-      name: "",
-      street: "",
-      city: "",
-      postal: "",
+      email: '',
+      confirmEmail: '',
+      password: '',
+      fullname: '',
+      street: '',
+      postal: '',
+      city: '',
     };
   }
 
-  res.render("customer/auth/signup", { sessionData: sessionData });
-};
+  res.render('customer/auth/signup', { inputData: sessionData });
+}
 
-const signup = async (req, res, next) => {
+async function signup(req, res, next) {
   const enteredData = {
     email: req.body.email,
-    confirmEmail: req.body["confirm-email"],
+    confirmEmail: req.body['confirm-email'],
     password: req.body.password,
-    name: req.body.fullname,
+    fullname: req.body.fullname,
     street: req.body.street,
-    city: req.body.city,
     postal: req.body.postal,
+    city: req.body.city,
   };
 
   if (
@@ -42,22 +38,22 @@ const signup = async (req, res, next) => {
       req.body.password,
       req.body.fullname,
       req.body.street,
-      req.body.city,
-      req.body.postal
+      req.body.postal,
+      req.body.city
     ) ||
-    !validation.isEmailConfirmed(req.body.email, req.body["confirm-email"])
+    !validation.emailIsConfirmed(req.body.email, req.body['confirm-email'])
   ) {
     sessionFlash.flashDataToSession(
       req,
       {
-        errorMessage: "Please check your input.",
+        errorMessage:
+          'Please check your input. Password must be at least 6 character slong, postal code must be 5 characters long.',
         ...enteredData,
       },
-      () => {
-        res.redirect("/signup");
+      function () {
+        res.redirect('/signup');
       }
     );
-
     return;
   }
 
@@ -66,22 +62,22 @@ const signup = async (req, res, next) => {
     req.body.password,
     req.body.fullname,
     req.body.street,
-    req.body.city,
-    req.body.postal
+    req.body.postal,
+    req.body.city
   );
 
   try {
-    const isUserExist = await user.existsAlready();
+    const existsAlready = await user.existsAlready();
 
-    if (isUserExist) {
+    if (existsAlready) {
       sessionFlash.flashDataToSession(
         req,
         {
-          errorMessage: "User already exists! Try login instead!",
+          errorMessage: 'User exists already! Try logging in instead!',
           ...enteredData,
         },
-        () => {
-          res.redirect("/signup");
+        function () {
+          res.redirect('/signup');
         }
       );
       return;
@@ -89,67 +85,70 @@ const signup = async (req, res, next) => {
 
     await user.signup();
   } catch (error) {
-    return next(error);
+    next(error);
+    return;
   }
 
-  res.redirect("/login");
-};
+  res.redirect('/login');
+}
 
-const getLogin = (req, res) => {
-  let sessionData = sessionFlash.getFlashData(req);
+function getLogin(req, res) {
+  let sessionData = sessionFlash.getSessionData(req);
 
   if (!sessionData) {
     sessionData = {
-      email: "",
-      password: "",
+      email: '',
+      password: '',
     };
   }
 
-  res.render("customer/auth/login", { sessionData: sessionData });
-};
+  res.render('customer/auth/login', { inputData: sessionData });
+}
 
-const login = async (req, res, next) => {
+async function login(req, res, next) {
   const user = new User(req.body.email, req.body.password);
-  let existingUser = null;
-
+  let existingUser;
   try {
     existingUser = await user.getUserWithSameEmail();
   } catch (error) {
-    return next(error);
+    next(error);
+    return;
   }
 
   const sessionErrorData = {
-    errorMessage: "Invalid Credentials. Please try again!",
+    errorMessage:
+      'Invalid credentials - please double-check your email and password!',
     email: user.email,
     password: user.password,
   };
 
   if (!existingUser) {
-    sessionFlash.flashDataToSession(req, sessionErrorData, () => {
-      res.redirect("/login");
+    sessionFlash.flashDataToSession(req, sessionErrorData, function () {
+      res.redirect('/login');
     });
     return;
   }
 
-  const passwordCorrect = await user.hasMatchingPassword(existingUser.password);
+  const passwordIsCorrect = await user.hasMatchingPassword(
+    existingUser.password
+  );
 
-  if (!passwordCorrect) {
-    sessionFlash.flashDataToSession(req, sessionErrorData, () => {
-      res.redirect("/login");
+  if (!passwordIsCorrect) {
+    sessionFlash.flashDataToSession(req, sessionErrorData, function () {
+      res.redirect('/login');
     });
     return;
   }
 
-  authUtil.createUserSession(req, existingUser, () => {
-    res.redirect("/");
+  authUtil.createUserSession(req, existingUser, function () {
+    res.redirect('/');
   });
-};
+}
 
-const logout = (req, res) => {
+function logout(req, res) {
   authUtil.destroyUserAuthSession(req);
-
-  res.redirect("/login");
-};
+  res.redirect('/login');
+}
 
 module.exports = {
   getSignup: getSignup,

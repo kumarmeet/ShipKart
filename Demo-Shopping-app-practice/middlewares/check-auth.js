@@ -1,4 +1,4 @@
-const checkAuthStatus = (req, res, next) => {
+function checkAuthStatus(req, res, next) {
   const uid = req.session.uid;
 
   if (!uid) {
@@ -6,10 +6,9 @@ const checkAuthStatus = (req, res, next) => {
   }
 
   res.locals.uid = uid;
-  res.locals.isAuth = true;
-  res.locals.isAdmin = req.session.isAdmin;
-  
+  res.locals.isAuth = true; 
+  res.locals.isAdmin = req.session.isAdmin; 
   next();
-};
+}
 
 module.exports = checkAuthStatus;
